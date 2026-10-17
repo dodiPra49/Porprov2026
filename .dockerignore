@@ -1,0 +1,9 @@
+vendor
+node_modules
+npm-debug.log
+.git
+api/node_modules
+frontend/node_modules
+frontend/.next
+.phpunit.cache
+storage/*.key
