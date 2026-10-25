@@ -15,6 +15,7 @@ Port telah disesuaikan agar tidak bentrok dengan container lain atau web server 
 | **Admin Panel** | `porprov_admin` | **`8002`** | `8000` | Laravel 11 Blade Admin Panel |
 | **REST API Engine** | `porprov_api` | **`5000`** | `5000` | Express.js REST API + JWT |
 | **Database** | `porprov_db` | **`3308`** | `3306` | MySQL 8.0 terpusat |
+| **phpMyAdmin GUI** | `porprov_phpmyadmin` | **`8085`** | `80` | Web GUI Database MySQL |
 
 ---
 
@@ -32,6 +33,7 @@ docker compose up -d
   - **Admin Panel (Laravel Blade):** [http://localhost:8090/admin](http://localhost:8090/admin)
   - **REST API (Express.js):** [http://localhost:8090/api/v1/medals](http://localhost:8090/api/v1/medals)
 - **Melalui Port Langsung:**
+  - phpMyAdmin: [http://localhost:8085](http://localhost:8085)
   - Portal Next.js: [http://localhost:3000](http://localhost:3000)
   - Admin Laravel: [http://localhost:8002/admin](http://localhost:8002/admin)
   - Express API: [http://localhost:5000/health](http://localhost:5000/health)

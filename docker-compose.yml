@@ -109,6 +109,23 @@ services:
     networks:
       - porprov_net
 
+  # 6. phpMyAdmin Database GUI
+  porprov_phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    container_name: porprov_phpmyadmin
+    restart: unless-stopped
+    ports:
+      - "8085:80"
+    environment:
+      PMA_HOST: porprov_db
+      PMA_PORT: 3306
+      UPLOAD_LIMIT: 64M
+    depends_on:
+      porprov_db:
+        condition: service_healthy
+    networks:
+      - porprov_net
+
 networks:
   porprov_net:
     driver: bridge
