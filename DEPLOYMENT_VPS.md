@@ -74,10 +74,10 @@ cat ~/.ssh/github_actions
 | :--- | :--- |
 | `VPS_HOST` | IP Publik VPS Anda (contoh: `103.180.xxx.xxx` atau domain) |
 | `VPS_USERNAME` | Username login SSH (contoh: `root` atau `ubuntu`) |
-| `VPS_SSH_KEY` | Paste seluruh isi dari `~/.ssh/github_actions` (Private Key) |
-| `VPS_PORT` | Port SSH VPS (biasanya `22`, atau port custom jika diubah) |
+| `VPS_PASSWORD` | **Password login VPS** (gunakan ini jika tidak memakai SSH Key) |
+| `VPS_SSH_KEY` | *(Opsional)* Isi Private Key jika memakai autentikasi SSH Key |
+| `VPS_PORT` | Port SSH VPS (default `22`) |
 | `VPS_TARGET_DIR` | Path folder project di VPS (contoh: `/var/www/porprov-2026`) |
-| `VPS_PASSPHRASE` | *(Opsional)* Kosongkan jika saat `ssh-keygen` tidak pakai passphrase |
 
 ---
 
