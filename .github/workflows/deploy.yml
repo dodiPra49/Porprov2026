@@ -9,6 +9,8 @@ jobs:
   deploy:
     name: Deploy to Production VPS
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
 
     steps:
       - name: Checkout Repository
@@ -26,37 +28,59 @@ jobs:
           script_stop: true
           script: |
             set -e
-            echo "🚀 Memulai proses deploy ke VPS..."
+            trap 'echo "❌ Terjadi error pada baris $LINENO saat menjalankan: $BASH_COMMAND"' ERR
+
+            echo "🚀 [1/5] Memulai proses deploy ke VPS..."
 
             TARGET_DIR="${{ secrets.VPS_TARGET_DIR || '/var/www/porprov-2026' }}"
-            REPO_URL="https://github.com/${{ github.repository }}.git"
+            REPO_URL="https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
 
-            # Pastikan folder target ada dan masuk ke dalamnya
-            mkdir -p "$TARGET_DIR"
+            # Pastikan direktori tujuan tersedia dan dapat ditulis oleh user SSH
+            echo "📂 [2/5] Memverifikasi direktori target: $TARGET_DIR..."
+            if [ ! -d "$TARGET_DIR" ]; then
+              echo "📁 Direktori belum ada, membuat direktori..."
+              if ! mkdir -p "$TARGET_DIR" 2>/dev/null; then
+                echo "🔑 Menggunakan sudo untuk membuat direktori..."
+                sudo mkdir -p "$TARGET_DIR"
+              fi
+            fi
+
+            # Pastikan user SSH memiliki izin tulis ke folder tersebut
+            if [ ! -w "$TARGET_DIR" ]; then
+              echo "🔑 Menyesuaikan hak akses kepemilikan ke $USER..."
+              sudo chown -R $USER:$USER "$TARGET_DIR" 2>/dev/null || true
+              sudo chmod -R 775 "$TARGET_DIR" 2>/dev/null || true
+            fi
+
             cd "$TARGET_DIR"
 
             # Hindari error 'dubious ownership' di git Linux
-            git config --global --add safe.directory "$TARGET_DIR" || true
+            git config --global --add safe.directory "$TARGET_DIR" 2>/dev/null || true
 
-            # Jika belum ada repository git, inisialisasi otomatis
+            # Inisialisasi git repository jika belum terhubung
             if [ ! -d ".git" ]; then
-              echo "⚙️ Direktori belum terhubung ke Git. Menginisialisasi repositori Git..."
+              echo "⚙️ [3/5] Menginisialisasi repositori Git baru..."
               git init
               git branch -M main || true
               git remote add origin "$REPO_URL" || git remote set-url origin "$REPO_URL"
+            else
+              echo "ℹ️ [3/5] Repositori Git ditemukan, memperbarui remote URL..."
+              git remote set-url origin "$REPO_URL" || true
             fi
 
             # Ambil pembaruan kode terbaru dari GitHub
-            echo "📥 Menarik kode terbaru dari branch main..."
-            git fetch --all
+            echo "📥 [4/5] Menarik kode terbaru dari branch main..."
+            git fetch origin main --prune
             git reset --hard origin/main
             git branch --set-upstream-to=origin/main main || true
 
-            # Pastikan script deploy dapat dieksekusi
-            chmod +x deploy.sh
-
-            # Jalankan script deploy
-            echo "⚙️ Menjalankan deploy.sh..."
-            ./deploy.sh
+            # Eksekusi deploy.sh
+            echo "⚙️ [5/5] Memeriksa dan menjalankan deploy.sh..."
+            if [ -f deploy.sh ]; then
+              chmod +x deploy.sh
+              ./deploy.sh
+            else
+              echo "⚠️ deploy.sh tidak ditemukan, deployment dilewati."
+            fi
 
             echo "✅ Deployment berhasil diselesaikan!"
