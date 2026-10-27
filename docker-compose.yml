@@ -87,9 +87,9 @@ services:
     networks:
       - porprov_net
 
-  # 5. MySQL Database
+  # 5. MySQL Database (versi 8.0.32 kompatibel dengan CPU tanpa instruksi x86-64-v2)
   porprov_db:
-    image: mysql:8.0
+    image: mysql:8.0.32
     container_name: porprov_db
     restart: always
     environment:
