@@ -37,6 +37,7 @@ services:
       SESSION_DRIVER: file
     volumes:
       - .:/var/www/html
+      - /var/www/html/vendor
     depends_on:
       porprov_db:
         condition: service_healthy
@@ -99,11 +100,11 @@ services:
     volumes:
       - mysql_porprov_data:/var/lib/mysql
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-prootpassword"]
-      interval: 5s
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -u root -p$$MYSQL_ROOT_PASSWORD || mysqladmin ping -h localhost || exit 1"]
+      interval: 10s
       timeout: 5s
       retries: 10
-      start_period: 10s
+      start_period: 60s
     networks:
       - porprov_net
 

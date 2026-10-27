@@ -25,7 +25,12 @@ if command -v docker &> /dev/null && [ -f docker-compose.yml ]; then
 
     # Rebuild & restart container
     echo "📦 Rebuilding dan menjalankan container..."
-    docker compose up -d --build --remove-orphans
+    if ! docker compose up -d --build --remove-orphans; then
+        echo "❌ Gagal menjalankan container! Menampilkan status dan log porprov_db:"
+        docker compose ps
+        docker compose logs porprov_db --tail=100
+        exit 1
+    fi
 
     # Tunggu beberapa detik agar container database dan service siap
     echo "⏳ Menunggu container siap..."
