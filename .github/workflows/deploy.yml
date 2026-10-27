@@ -25,10 +25,8 @@ jobs:
           key: ${{ secrets.VPS_SSH_KEY }}
           passphrase: ${{ secrets.VPS_PASSPHRASE }}
           port: ${{ secrets.VPS_PORT || 22 }}
-          script_stop: true
           script: |
             set -e
-            trap 'echo "❌ Terjadi error pada baris $LINENO saat menjalankan: $BASH_COMMAND"' ERR
 
             echo "🚀 [1/5] Memulai proses deploy ke VPS..."
 
@@ -39,10 +37,7 @@ jobs:
             echo "📂 [2/5] Memverifikasi direktori target: $TARGET_DIR..."
             if [ ! -d "$TARGET_DIR" ]; then
               echo "📁 Direktori belum ada, membuat direktori..."
-              if ! mkdir -p "$TARGET_DIR" 2>/dev/null; then
-                echo "🔑 Menggunakan sudo untuk membuat direktori..."
-                sudo mkdir -p "$TARGET_DIR"
-              fi
+              mkdir -p "$TARGET_DIR" 2>/dev/null || sudo mkdir -p "$TARGET_DIR" 2>/dev/null || true
             fi
 
             # Pastikan user SSH memiliki izin tulis ke folder tersebut
