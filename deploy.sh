@@ -23,13 +23,20 @@ fi
 if command -v docker &> /dev/null && [ -f docker-compose.yml ]; then
     echo "🐳 Menggunakan Docker Compose Deployment..."
 
-    # Rebuild & restart container
-    echo "📦 Rebuilding dan menjalankan container..."
-    if ! docker compose up -d --build --remove-orphans; then
+    # 1. Rebuild images
+    echo "🔨 [1/2] Membangun image Docker (Build)..."
+    if ! docker compose build; then
+        echo "❌ Gagal membangun image Docker! Periksa error log build di atas."
+        exit 1
+    fi
+
+    # 2. Jalankan container
+    echo "🚀 [2/2] Menjalankan container Docker..."
+    if ! docker compose up -d --remove-orphans; then
         echo "❌ Gagal menjalankan container! Menampilkan status seluruh service:"
         docker compose ps -a
-        echo "📋 Log seluruh container terkait:"
-        docker compose logs --tail=50
+        echo "📋 Log container yang mengalami masalah:"
+        docker compose logs --tail=30
         exit 1
     fi
 

@@ -82,6 +82,7 @@ services:
       - "3000:3000"
     environment:
       NEXT_PUBLIC_API_URL: http://porprov_api:5000/api/v1
+      NEXT_SERVER_ACTIONS_ENCRYPTION_KEY: ${NEXT_SERVER_ACTIONS_ENCRYPTION_KEY:-porprov-server-actions-key-2026-sumbar}
     depends_on:
       - porprov_api
     networks:
